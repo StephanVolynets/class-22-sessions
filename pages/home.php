@@ -14,9 +14,7 @@ $nav_home_class = "active_page";
   <main>
     <h2>INFO/CS 2300; NBA 5301</h2>
 
-    <!-- TODO: 6b. show the user that's logged in -->
-    <p>Welcome <strong><?php // echo htmlspecialchars($current_user['name']); 
-                        ?></strong>!</p>
+    <p>Welcome <strong><?php echo htmlspecialchars($current_user['name']); ?></strong>!</p>
 
     <p>This website is rendered server-side in PHP.</p>
 
@@ -26,9 +24,7 @@ $nav_home_class = "active_page";
 
     <h2>Sign In</h2>
 
-    <!-- TODO: 3. add a login form. -->
-    <?php // echo login_form('/', $session_messages); 
-    ?>
+    <?php echo login_form('/', $session_messages); ?>
 
   </main>
 
