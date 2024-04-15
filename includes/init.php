@@ -13,8 +13,9 @@ $nav_plopbox_class = "";
 require_once "includes/db.php";
 $db = init_sqlite_db("db/site.sqlite", "db/init.sql");
 
-// TODO: 1. include sessions library
-// require_once "includes/sessions.php";
-// TODO: 5. check login/session parameters before rendering the page.
-// $session_messages = array();
-// process_session_params($db, $session_messages);
+// 1. include sessions library
+require_once "includes/sessions.php";
+
+// TODO 5. check login/session parameters before rendering the page.
+$session_messages = array();
+process_session_params($db, $session_messages);

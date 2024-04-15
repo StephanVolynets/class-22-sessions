@@ -5,9 +5,9 @@ include_once('includes/db.php');
 $session_messages = array();
 $signup_messages = array();
 
-// TODO: 8. how long should our session cookies be good for?
+// TODO 8. how long should our session cookies be good for?
 // cookie duration expiration time in seconds
-// define('SESSION_COOKIE_DURATION', 60 * 60 * 1); // 1 hour = 60 sec * 60 min * 1 hr
+define('SESSION_COOKIE_DURATION', 60 * 60 * 1); // 1 hour = 60 sec * 60 min * 1 hr
 
 // find user's record from user_id
 function find_user($db, $user_id)
@@ -116,40 +116,43 @@ function password_login($db, &$messages, $username, $password)
       // Username is UNIQUE, so there should only be 1 record.
       $user = $records[0];
 
-      // TODO: 6a. check password from HTTP parameter against value in database
-      // // Check password against hash in DB
-      // if (password_verify($password, $user['password'])) {
-      //   // // TODO: 9. create secure session ID
-      //   // // Generate session
-      //   // $session = session_create_id();
-      //
-      //   // // TODO: 10b. remember session ID in DB (part I)
-      //   // // Store session ID in database
-      //   // $result = exec_sql_query(
-      //   //   $db,
-      //   //   "INSERT INTO sessions (user_id, session, last_login) VALUES (:user_id, :session, datetime());",
-      //   //   array(
-      //   //     ':user_id' => $user['id'],
-      //   //     ':session' => $session
-      //   //   )
-      //   // );
-      //   // if ($result) {
-      //   //   // Success, session stored in DB
-      //
-      //     // TODO: 7. create a cookie for the session
-      //     // Send this back to the user.
-      //     // setcookie("session", "TODO: 11a. set cookie value to session", "TODO: 11b. set session cookie expiration", '/');
-      //
-      //     error_log("  login via password successful");
-      //     $current_user = $user;
-      //     return $current_user;
-      //   // TODO: 10. remember session ID in DB (part II)
-      //   // } else {
-      //   //   array_push($messages, "Log in failed.");
-      //   // }
-      // } else {
-      //   array_push($messages, "Invalid username or password.");
-      // }
+      // TODO 6a. check password from HTTP parameter against value in database
+      // Check password against hash in DB
+      if (password_verify($password, $user['password'])) {
+        // TODO 9. create secure session ID
+        // Generate session
+        $session = session_create_id();
+
+        // TODO 10b. remember session ID in DB (part I)
+        // Store session ID in database
+        $result = exec_sql_query(
+          $db,
+          "INSERT INTO sessions (user_id, session, last_login) VALUES (:user_id, :session, datetime());",
+          array(
+            ':user_id' => $user['id'],
+            ':session' => $session
+          )
+        );
+        if ($result) {
+        // TODO: 7. create a cookie for the session
+        // Send this back to the user.
+        setcookie("session", $session, time() + SESSION_COOKIE_DURATION, '/');
+
+
+          // TODO: 7. create a cookie for the session
+          // Send this back to the user.
+          setcookie("session", $session, time() + SESSION_COOKIE_DURATION, '/');
+
+          error_log("  login via password successful");
+          $current_user = $user;
+          return $current_user;
+        // TODO 10. remember session ID in DB (part II)
+        } else {
+          array_push($messages, "Log in failed.");
+        }
+      } else {
+        array_push($messages, "Invalid username or password.");
+      }
     } else {
       array_push($messages, "Invalid username or password.");
     }
@@ -188,8 +191,8 @@ function cookie_login($db, $session)
       );
 
       // TODO: 15a. renew the cookie's expiration date
-      //  // Renew the cookie for 1 more hour
-      // setcookie("session", $session['session'], time() + SESSION_COOKIE_DURATION, '/');
+      // Renew the cookie for 1 more hour
+      setcookie("session", $session['session'], time() + SESSION_COOKIE_DURATION, '/');
 
       error_log("  login via cookie successful");
       return $current_user;
@@ -295,27 +298,27 @@ function login_form($action, $messages)
 function process_session_params($db, &$messages)
 {
   $session = NULL;
-  // TODO: 12. check if a session cookie exists
-  // // Is there a session? If so, find it!
-  // if (isset($_COOKIE["session"])) {
-  //   $session_hash = $_COOKIE["session"];
-  //
-  //   // TODO 13. find the session record in the database
-  //   // $session = find_session($db, $session_hash);
+  // TODO 12. check if a session cookie exists
+  // Is there a session? If so, find it!
+  if (isset($_COOKIE["session"])) {
+    $session_hash = $_COOKIE["session"];
+
+  // TODO 13. find the session record in the database
+    $session = find_session($db, $session_hash);
   // }
 
   if (isset($_GET['logout']) || isset($_POST['logout'])) { // Check if we should logout the user
-    // TODO: 16. logout the user
+    // TODO 16. logout the user
     // error_log("  attempting to logout...");
     // logout($db, $session);
   } else if (isset($_POST['login'])) { // Check if we should login the user
-    // TODO: 4. check login form parameters with database to login
+    // TODO 4. check login form parameters with database to login
     error_log("  attempting to login with username and password...");
     password_login($db, $messages, $_POST['login_username'], $_POST['login_password']);
   } else if ($session) { // check if logged in already via cookie
     // TODO 14. login via session record
-    // error_log("  attempting to login via cookie...");
-    // cookie_login($db, $session);
+    error_log("  attempting to login via cookie...");
+    cookie_login($db, $session);
   }
 }
 
